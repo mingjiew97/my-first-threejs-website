@@ -64,6 +64,17 @@ class Website3DDemo {
         light = new THREE.AmbientLight(0xFFFFFF);
         this._scene.add(light);
 
+        // plane
+        const plane = new THREE.Mesh(
+            new THREE.PlaneGeometry(100, 100, 10, 10),
+            new THREE.MeshStandardMaterial({
+                color: 0x808080,
+            }));
+        plane.castShadow = false;
+        plane.receiveShadow = true;
+        plane.rotation.x = -Math.PI / 2;
+        this._scene.add(plane);
+
         // controls
         this._controls = new OrbitControls(this._camera, canvas);
         this._controls.enableDamping = true;
@@ -78,7 +89,7 @@ class Website3DDemo {
 
         this._mixers = [];
         this._previousRAF = null;
-    
+
         this._RAF();
 
         // TODO: resize function
@@ -111,23 +122,23 @@ class Website3DDemo {
     _Step(timeElapsed) {
         const timeElapsedS = timeElapsed * 0.001;
         if (this._mixers) {
-          this._mixers.map(m => m.update(timeElapsedS));
+            this._mixers.map(m => m.update(timeElapsedS));
         }
-      }
+    }
 
     _RAF() {
         requestAnimationFrame((t) => {
-          if (this._previousRAF === null) {
+            if (this._previousRAF === null) {
+                this._previousRAF = t;
+            }
+
+            this._RAF();
+
+            this._threejs.render(this._scene, this._camera);
+            this._Step(t - this._previousRAF);
             this._previousRAF = t;
-          }
-    
-          this._RAF();
-    
-          this._threejs.render(this._scene, this._camera);
-          this._Step(t - this._previousRAF);
-          this._previousRAF = t;
         });
-      }
+    }
 }
 
 let _APP = null;
